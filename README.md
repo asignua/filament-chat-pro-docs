@@ -24,8 +24,8 @@ plugin keeps working on the last release you received, and you can renew for fur
 
 | Tier | Projects | Activations | Price | Renewal |
 | --- | --- | --- | --- | --- |
-| Single Project | 1 | up to 3 (production, staging, local) | €TODO | €TODO / year |
-| Unlimited | any number, SaaS included | unlimited | €TODO | €TODO / year |
+| Single Project | 1 | up to 3 (production, staging, local) | €69 | €35 / year |
+| Unlimited | any number, SaaS included | unlimited | €169 | €85 / year |
 
 Refunds are available within 14 days of purchase.
 
