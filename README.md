@@ -5,6 +5,9 @@
 > repository you get with a licence — [buy one on Anystack](https://checkout.anystack.sh/filament-chat-pro).
 > Questions: support@asign.in.ua.
 
+<img class="filament-hidden" src="https://raw.githubusercontent.com/asignua/filament-chat-pro-docs/main/art/cover.jpg" alt="Filament Chat Pro">
+
+
 The paid add-on for [Filament Chat](https://github.com/asignua/filament-chat), the team chat for Filament 5 panels. It turns the
 chat into a place where work happens: **send files** (drag & drop, the paperclip, **paste a screenshot** straight from the
 clipboard), look at pictures in a **lightbox**, **delete your own messages**, see **«Olga is typing…»** and **search every
@@ -15,7 +18,23 @@ the free package keeps updating on its own. Dark mode, ten languages, and every 
 
 ## Screenshots
 
-TODO: add images to `art/` (cover.jpg first) and reference them here.
+![A conversation with images, files and a deleted message](https://raw.githubusercontent.com/asignua/filament-chat-pro-docs/main/art/chat-page.jpg)
+
+A screenshot pasted straight from the clipboard waits as a chip until you send it:
+
+![Pasting a screenshot](https://raw.githubusercontent.com/asignua/filament-chat-pro-docs/main/art/paste.jpg)
+
+Pictures open in a lightbox; files download with one click:
+
+![The lightbox](https://raw.githubusercontent.com/asignua/filament-chat-pro-docs/main/art/lightbox.jpg)
+
+Search every message you have been part of, across conversations:
+
+![Searching messages](https://raw.githubusercontent.com/asignua/filament-chat-pro-docs/main/art/search.jpg)
+
+Dark mode:
+
+![Dark mode](https://raw.githubusercontent.com/asignua/filament-chat-pro-docs/main/art/chat-page-dark.jpg)
 
 ## Purchase
 
