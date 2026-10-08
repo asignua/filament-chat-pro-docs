@@ -176,14 +176,14 @@ The width and height of a picture are stored, so the feed reserves its space bef
 Press Ctrl/Cmd+V in the composer with a screenshot (or files copied in the file manager) on the clipboard: the files join the
 pending uploads. A pasted picture has no real name — browsers call it `image.png` — so it is named `screenshot-YYYYMMDD-HHMMSS.png`
 (the server applies the same rule as a safety net). **Default is prevented only when files were taken**: pasting text works exactly as
-before, and a paste that carries both text and a file (a cell copied from a spreadsheet) is taken as the file.
+before, and a paste that carries text plus only an unnamed picture of it (a cell copied from a spreadsheet, a web page) pastes the text; files with real names, or a screenshot with no text, are attached.
 
 ### Deleting your own messages
 
 A trash button in the message menu opens a confirmation (Filament's modal). The message is **soft-deleted**: everyone sees «Message
 deleted» in its place (a quote of it too, and the unread counters follow), and the message is **really erased**: in the same transaction its
 text, record reference and mentions are blanked in the row, its files and rows are removed, and the bell notifications that quoted it are
-deleted (they carry no message id, so they are matched by type, recipient, time and the quoted preview). The other members' feeds refresh
+deleted (they carry no message id, so they are matched by identity, never by time: chat notification type, member, this conversation's link, the author named in the title, and the exact quoted preview). The other members' feeds refresh
 through the chat's own channel. Hosts that need an audit trail set `delete.keep_text` (`->deleting(keepText: true)`): the row then keeps its
 content — readable by anyone with database access. In the conversation list a deleted latest message gives way to the previous one (for groups
 you left too).
@@ -239,7 +239,7 @@ nothing — there is no channel to whisper on.
 - **Only raster pictures (JPEG, PNG, GIF, WebP, AVIF) are shown inline.** SVG, HTML and every document are always sent as
   `Content-Disposition: attachment`, with `X-Content-Type-Options: nosniff` and a locked-down `Content-Security-Policy: sandbox`, so an
   uploaded file can never run in your origin. Add `svg` to the allow-list if you must — it will still only ever download.
-- The file name goes through `filename*` (RFC 5987) with an ASCII fallback; the stored name is the ulid, never the client's.
+- The file name goes through `filename*` (RFC 5987) with an ASCII fallback; the stored name is the ulid, never the client's, and its extension comes from the sniffed content type (the client's only if it is plain and not `php`, `html`, `svg`, `js` and the like; otherwise `.bin`).
 - Content types are sniffed server-side; both the extension and the type must be on the allow-list.
 - Who may download: a member of the conversation who is still in the chat's `->users()` set and allowed into the panel
   (`canAccessPanel`). A deactivated or excluded person gets 403.
@@ -251,6 +251,13 @@ nothing — there is no channel to whisper on.
 - Add throttling to the download route if you need it: `routes.middleware` = `['web', 'throttle:120,1']`.
 
 ## Gotchas
+
+- **The `notifications.data` column must stay Laravel's stock `text`.** The bell cleanup looks the body up with `LIKE` on the stored JSON; a MySQL `json` or PostgreSQL `jsonb` column re-serialises the value (spaces, raw unicode), so nothing would match and the bells would keep the deleted text.
+- **Deleting a message removes its bell notifications by text identity.** The free chat's notification data has no message id, so a bell
+  is deleted when it is a chat notification of this conversation, its title is a free-chat title template filled with exactly the message's author (any locale: the request's, the fallback, the recipient's preferred one, every shipped or host-overridden one; the group title may be anything) and its body equals the message's
+  preview exactly. Consequences: two identical texts by the same author in the same conversation lose both bells; the bell of an
+  edited message's original text and bells whose author was renamed since stay. Follow-up for the owner: add the message ulid to the
+  free `filament-chat` notification data, then match on it.
 
 - **Both migrations are required** even if you switch a feature off: the message model gains `SoftDeletes` and an `attachments`
   relation, and every query then filters on `deleted_at`.
