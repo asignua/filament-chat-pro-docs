@@ -26,6 +26,7 @@ the free package keeps updating on its own. Dark mode, RTL locales supported, 47
 | Chat page, top-bar slide-over that can be pinned next to any page, unread counters and bell | ✓ | ✓ |
 | Record references: drop a link to a panel record and it becomes a card | ✓ | ✓ |
 | Real time over Reverb / Pusher / Ably, or polling | ✓ | ✓ |
+| Presence: green "online" dot and "last seen", real time or polling | ✓ | ✓ |
 | RTL, dark mode, 47 languages | ✓ | ✓ |
 | File attachments: drag & drop, paperclip, **paste a screenshot** from the clipboard | | ✓ |
 | Image lightbox, one-click file download | | ✓ |

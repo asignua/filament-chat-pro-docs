@@ -2,6 +2,10 @@
 
 All notable changes to `asignua/filament-chat-pro` are documented here.
 
+## Unreleased
+
+- Docs: the Free or Pro table lists presence (online dot, last seen), new in `asignua/filament-chat` 1.7. No code change; the full suite passes against it.
+
 ## v1.3.0 - 2026-10-25
 
 - Added: right-to-left support (Persian…): the lightbox flips its chevrons and swaps the ←/→ keys, the "1 / 2" counter keeps its order, search hits and the typing line use `dir="auto"`. Needs the matching `asignua/filament-chat` release for the rest of the window.
