@@ -2,7 +2,7 @@
 
 All notable changes to `asignua/filament-chat-pro` are documented here.
 
-## Unreleased
+## v1.3.0 - 2026-10-25
 
 - Added: right-to-left support (Persian…): the lightbox flips its chevrons and swaps the ←/→ keys, the "1 / 2" counter keeps its order, search hits and the typing line use `dir="auto"`. Needs the matching `asignua/filament-chat` release for the rest of the window.
 - Tests: a guard keeps physical `left`/`right` utilities out of the views.
