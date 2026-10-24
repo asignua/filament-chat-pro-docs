@@ -2,6 +2,23 @@
 
 All notable changes to `asignua/filament-chat-pro` are documented here.
 
+## Unreleased
+
+- Added: right-to-left support (Persian…): the lightbox flips its chevrons and swaps the ←/→ keys, the "1 / 2" counter keeps its order, search hits and the typing line use `dir="auto"`. Needs the matching `asignua/filament-chat` release for the rest of the window.
+- Tests: a guard keeps physical `left`/`right` utilities out of the views.
+- Added: Persian (`fa`) and 36 more interface languages, matching the free chat: `bg bs ca cs da el et eu fi ga hr hu is lb lt lv mk mt nb pt ro sk sl sq sr_Latn sr_Cyrl sv be kk ky tg tk uz az hy ka`. Plural strings carry as many forms as Laravel picks for the language (one for `sr`, `kk`, `ky`, `tg`, `uz`, `az`, `ka`).
+- Tests: the translations test now discovers locales from the folder and checks the number of plural forms.
+
+## v1.2.0 - 2026-10-13
+
+- Added: a new-message chime (Web Audio, or your file in `sound.url`), also in a background tab, one tab per browser, muted per browser from the conversation header. Needs `asignua/filament-chat` `^1.5` (the `filament-chat-incoming` event).
+- Added: the email digest of messages left unread for `digest.after` minutes — one queued mail per person, never twice about the same messages; `filament-chat-pro:send-digests`, scheduled by the package. New migration `add_digest_to_filament_chat_participants`.
+
+## v1.1.0 - 2026-10-09
+
+- Added: attachment hook points for add-ons: `Support\AttachmentHooks` + `Enums\AttachmentHook` (`LIGHTBOX_ACTIONS` once per message in the lightbox caption, `THUMBNAIL_AFTER` inside each picture's thumbnail). The lightbox items now carry the attachment `ulid`. Nothing changes while no hook is registered. Chat Pro's own registry, so no newer `asignua/filament-chat` is required.
+- Added: `Events\AttachmentDeleted`, fired for each attachment removed with its message.
+
 ## v1.0.1 - 2026-10-08
 
 - Licence: the commercial licence terms (LICENSE.md), prices in the README, screenshots and a cover in `art/`.

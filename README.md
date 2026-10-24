@@ -14,7 +14,26 @@ clipboard), look at pictures in a **lightbox**, **delete your own messages**, se
 message** you have ever been part of.
 
 It is built on the free chat's extension seams — a window subclass, render hooks and a few protected methods — not on a fork, so
-the free package keeps updating on its own. Dark mode, ten languages, and every feature is a switch.
+the free package keeps updating on its own. Dark mode, RTL locales supported, 47 languages, and every feature is a switch.
+
+## Free or Pro?
+
+| | [Chat](https://github.com/asignua/filament-chat) (free, MIT) | [Chat Pro](https://github.com/asignua/filament-chat-pro-docs) (€69 / €169) |
+| --- | :---: | :---: |
+| Direct messages and groups, @mentions, editing, reactions, replies, read receipts | ✓ | ✓ |
+| Chat page, top-bar slide-over that can be pinned next to any page, unread counters and bell | ✓ | ✓ |
+| Record references: drop a link to a panel record and it becomes a card | ✓ | ✓ |
+| Real time over Reverb / Pusher / Ably, or polling | ✓ | ✓ |
+| RTL, dark mode, 47 languages | ✓ | ✓ |
+| File attachments: drag & drop, paperclip, **paste a screenshot** from the clipboard | | ✓ |
+| Image lightbox, one-click file download | | ✓ |
+| Delete your own messages | | ✓ |
+| "Olga is typing…" indicator | | ✓ |
+| Search every message across your conversations | | ✓ |
+| New-message sound (built-in chime or your file) | | ✓ |
+| Email digest of unread messages | | ✓ |
+
+Chat Pro is an add-on: it requires the free package and builds on its extension seams, so conversations and settings carry over.
 
 ## Screenshots
 
@@ -56,7 +75,7 @@ access to the private Composer repository. See [LICENSE.md](https://github.com/a
 - PHP 8.3+
 - Laravel 12 or 13
 - Filament 5
-- [`asignua/filament-chat`](https://github.com/asignua/filament-chat) `^1.3` (installed with it as a dependency)
+- [`asignua/filament-chat`](https://github.com/asignua/filament-chat) `^1.5` (installed with it as a dependency)
 - Real-time chat over Reverb or Pusher for the typing indicator (everything else works with polling)
 
 ## Installation
@@ -171,6 +190,28 @@ comes from the config. Closures (`canDeleteUsing`) live on the plugin only, so t
 
 The width and height of a picture are stored, so the feed reserves its space before it loads.
 
+#### Extending the attachment view
+
+Add-ons (for example [Image Annotations Pro](https://github.com/asignua/filament-image-annotations-pro), which adds an «Annotate» button)
+put markup into two places, through Chat Pro's own registry — it needs no newer free chat:
+
+```php
+use Asignua\FilamentChatPro\Enums\AttachmentHook;
+use Asignua\FilamentChatPro\Support\AttachmentHooks;
+
+$hooks = app(AttachmentHooks::class);
+
+// In the lightbox caption, next to «Download». Once per message. The markup lives in the lightbox's Alpine scope:
+// `items[index]` is {url, download, name, ulid}; `open = false` closes it. Context: message, mine.
+$hooks->register(AttachmentHook::LIGHTBOX_ACTIONS, fn (array $context) => view('my.lightbox-button', $context));
+
+// Inside the thumbnail of one picture (the button is position: relative, so a corner badge fits). Context: attachment, message.
+$hooks->register(AttachmentHook::THUMBNAIL_AFTER, fn (array $context) => '<span>…</span>');
+```
+
+A string result is trusted HTML. Nothing is rendered while nothing is registered. The event `Events\AttachmentDeleted` is fired for
+every attachment removed together with its message, so an add-on can delete what it hung on it.
+
 ### Clipboard paste
 
 Press Ctrl/Cmd+V in the composer with a screenshot (or files copied in the file manager) on the clipboard: the files join the
@@ -217,6 +258,26 @@ nothing — there is no channel to whisper on.
   SQLite's `LOWER` only folds ASCII, so on SQLite non-Latin text is matched case-sensitively (MySQL, MariaDB and PostgreSQL are fine), at least `search.min_length` characters (2),
   at most `search.limit` hits (30), newest first. Deleted messages are skipped; in a group you left you find only what was written
   before you left. Queries live in `MessageSearchRepository`. For millions of messages bring your own engine.
+
+### New-message sound
+
+- A short chime when a message from someone else arrives — on any page of the panel and in a background tab (the free chat's
+  `filament-chat-incoming` browser event). Silent when that conversation is on the screen of a visible tab; one tab of the
+  browser plays it.
+- The built-in chime is Web Audio (no file); `sound.url` (or `->sound(url: '/sounds/ding.mp3')`) plays your file instead. Browsers
+  let a page sound only after the first click or key press on it.
+- Everyone can mute it with the bell in the conversation header — remembered in that browser. `sound.enabled` / `->sound(false)`.
+
+### Email digest
+
+- Messages from others left unread for `digest.after` minutes (60) go to the person's email: one mail with every such
+  conversation — its title, how many wait, the latest `digest.messages_per_conversation` (3) messages and a link. Never twice about
+  the same messages (`conversation_participants.digest_message_id`); new messages later make a new mail.
+- `filament-chat-pro:send-digests` is scheduled by the package every `digest.every` minutes (5) — the host needs the scheduler, and
+  a queue worker (the mail is queued).
+- Recipients: the chat's people (`FilamentChatPlugin::users()`), still in the conversation, with an address
+  (`routeNotificationForMail()` or `email`). `digest.preview` false keeps the message text out of the mail; `digest.timezone`
+  — the zone of the times shown (`app.timezone` by default). Without the migration there is no digest.
 
 ## Realtime notes
 
@@ -282,7 +343,9 @@ nothing — there is no channel to whisper on.
 
 ## Upgrading notes
 
-- Chat Pro 1.x needs `asignua/filament-chat` `^1.3` (the extension seams). Upgrade the free chat first.
+- Chat Pro 1.x needs `asignua/filament-chat` `^1.3` (the extension seams), 1.2 needs `^1.5` (the incoming event). Upgrade the free chat first.
+- 1.2 adds a migration, `add_digest_to_filament_chat_participants` (the digest pointer): `php artisan filament-chat-pro:install`
+  publishes the missing ones, then `php artisan migrate`. The free chat 1.5 brings its own (`last_read_at`).
 - Moving from the free chat to Chat Pro on an existing installation: install, run the migrations, add the plugin. Existing messages
   are unaffected; the `deleted_at` column is nullable.
 - `ChatService::send()` (free 1.3) has a new optional fourth parameter; a published `pages/chat.blade.php` keeps the stock window and a
@@ -304,14 +367,13 @@ Gate::allows('delete', $message);
 
 Public extension points: `ChatProPlugin` (the setters above), `Livewire\ProChatWindow` (extend it and set it as
 `filament-chat.ui.window_component`), `Models\Message`, `Models\Attachment`, `Services\AttachmentService`,
-`Services\MessageDeletionService`, `Repositories\MessageSearchRepository`, `Support\TypingChannel`, and the route
+`Services\MessageDeletionService`, `Repositories\MessageSearchRepository`, `Support\AttachmentHooks` (+ `Enums\AttachmentHook`), `Events\AttachmentDeleted`, `Support\TypingChannel`, and the route
 `filament-chat-pro.attachment`.
 
 ## Translations
 
-The interface ships in English, Ukrainian, German, Spanish, French, Italian, Dutch, Polish, Brazilian Portuguese and Turkish
-under the `filament-chat-pro::filament-chat-pro` namespace. A test keeps every language in step with the English keys and
-placeholders. Override a string by publishing the translations (`--tag=filament-chat-pro-translations`) and editing the copy in
+The interface ships in the same languages as the free chat — English, Ukrainian, German, Spanish, French, Italian, Dutch, Polish, Brazilian Portuguese, Turkish, Persian and Albanian, Armenian, Azerbaijani, Basque, Belarusian, Bosnian, Bulgarian, Catalan, Croatian, Czech, Danish, Estonian, Finnish, Georgian, Greek, Hungarian, Icelandic, Irish, Kazakh, Kyrgyz, Latvian, Lithuanian, Luxembourgish, Macedonian, Maltese, Norwegian (Bokmål), Portuguese, Romanian, Serbian (Latin and Cyrillic), Slovak, Slovenian, Swedish, Tajik, Turkmen and Uzbek
+(47 in all) under the `filament-chat-pro::filament-chat-pro` namespace. A test keeps every language in step with the English keys, placeholders and plural forms. Override a string by publishing the translations (`--tag=filament-chat-pro-translations`) and editing the copy in
 `lang/vendor/filament-chat-pro`.
 
 ## Styles
