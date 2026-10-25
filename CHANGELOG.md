@@ -2,7 +2,8 @@
 
 All notable changes to `asignua/filament-chat-pro` are documented here.
 
-## Unreleased
+## v1.4.0 - 2026-10-25
+- Requires `asignua/filament-chat` ^1.7 (presence).
 
 - Docs: the Free or Pro table lists presence (online dot, last seen), new in `asignua/filament-chat` 1.7. No code change; the full suite passes against it.
 
