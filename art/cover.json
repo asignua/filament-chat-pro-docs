@@ -1,0 +1,17 @@
+{
+    "shots": [],
+    "covers": [
+        {
+            "html": "../../scripts/art/cover.html",
+            "out": "cover.jpg",
+            "query": {
+                "eyebrow": "Pro add-on for Filament Chat",
+                "title": "Files, screenshots and search",
+                "lead": "Drop files or paste a screenshot straight into the conversation, open pictures in a lightbox, delete messages and find anything your team has ever said.",
+                "chips": "Paste screenshots|Files & lightbox|Search every message|Typing indicator",
+                "shot": "../../filament-chat-pro/art/cover-source.jpg",
+                "crop": "703,325,2114,1412"
+            }
+        }
+    ]
+}
